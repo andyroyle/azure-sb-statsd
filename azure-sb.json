@@ -1,0 +1,11 @@
+[
+  {
+    "endpoint": "sb://my-asb.servicebus.windows.net/",
+    "key": "accesskey",
+    "keyname": "RootManageSharedAccessKey",
+    "tags": {
+      "foo": "bar"
+    },
+    "prefix": "yay"
+  }
+]

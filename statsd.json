@@ -1,0 +1,7 @@
+{
+  "host": "localhost",
+  "port": 8125,
+  "interval": 10,
+  "prefix": "my.azure.sb",
+  "debug": true
+}
