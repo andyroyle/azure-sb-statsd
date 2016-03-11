@@ -10,20 +10,29 @@ azure-sb-statsd /path/to/config/files/
 
 ###Gauges
 
-Per topic
+Queue
 
-- subscriptioncount
 - sizeinbytes
 - percentused (calculated from MaxSizeInMegabytes and SizeInBytes)
-
-Per subscription
-
 - activemessagecount
 - deadlettermessagecount
 - scheduledmessagecount
 - transfermessagecount
 - transferdeadlettermessagecount
 
+Topic
+
+- subscriptioncount
+- sizeinbytes
+- percentused (calculated from MaxSizeInMegabytes and SizeInBytes)
+
+Subscription
+
+- activemessagecount
+- deadlettermessagecount
+- scheduledmessagecount
+- transfermessagecount
+- transferdeadlettermessagecount
 
 ###Config Files
 
@@ -34,6 +43,8 @@ Per subscription
     "host": "https://my.servicebus.windows.net",
     "key": "accesskey",
     "keyname": "RootManageSharedAccessKey", // chances are you'll need to use the rootmanage key
+    "queues": true,                         // log info for queues
+    "topics": true,                         // log info for topics (and subscriptions)
     "prefix": "foo.bar.azuresb.yay",        // optional prefix for metrics from this instance
     "tags": {                               // optional, tags are supported by the influxdb backend
       "foo": "bar"
