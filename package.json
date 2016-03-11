@@ -1,7 +1,7 @@
 {
   "name": "azure-sb-statsd",
   "version": "1.0.0",
-  "description": "pull info from azure service bus http-api and publish to statsd",
+  "description": "pull info from azure service bus and publish to statsd",
   "main": "azure-sb.js",
   "scripts": {
     "test": "grunt",
