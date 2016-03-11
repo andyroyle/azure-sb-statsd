@@ -3,6 +3,8 @@
     "endpoint": "sb://my-asb.servicebus.windows.net/",
     "key": "accesskey",
     "keyname": "RootManageSharedAccessKey",
+    "queues": false,
+    "topics": true,
     "tags": {
       "foo": "bar"
     },

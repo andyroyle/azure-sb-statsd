@@ -21,7 +21,8 @@ describe('statsdLogger tests', () => {
       'statsd-client': Client,
       './gauges': {
         topic: [ 'SizeInBytes', 'SubscriptionCount', 'PercentUsed' ],
-        subscription: [ 'baz', 'flarg' ]
+        queue: [ 'SizeInBytes', 'PercentUsed' ],
+        countdetails: [ 'baz', 'flarg' ]
       },
       path: {
         resolve: (a) => { return a; },
@@ -41,9 +42,9 @@ describe('statsdLogger tests', () => {
         }
       });
       metrics.length.should.equal(2);
-      metrics[0].m.should.equal('foo-topic.foo-subscription.baz');
+      metrics[0].m.should.equal('topics.foo-topic.foo-subscription.baz');
       metrics[0].v.should.equal(1);
-      metrics[1].m.should.equal('foo-topic.foo-subscription.flarg');
+      metrics[1].m.should.equal('topics.foo-topic.foo-subscription.flarg');
       metrics[1].v.should.equal(2);
     });
 
@@ -73,8 +74,8 @@ describe('statsdLogger tests', () => {
         }
       });
       metrics.length.should.equal(2);
-      metrics[0].m.should.equal('foo-topic.foo-subscription.baz,foo=bar,flarg=baz');
-      metrics[1].m.should.equal('foo-topic.foo-subscription.flarg,foo=bar,flarg=baz');
+      metrics[0].m.should.equal('topics.foo-topic.foo-subscription.baz,foo=bar,flarg=baz');
+      metrics[1].m.should.equal('topics.foo-topic.foo-subscription.flarg,foo=bar,flarg=baz');
     });
 
     it('should use instance prefix', () => {
@@ -88,8 +89,8 @@ describe('statsdLogger tests', () => {
         prefix: 'boo'
       });
       metrics.length.should.equal(2);
-      metrics[0].m.should.equal('boo.foo-topic.foo-subscription.baz');
-      metrics[1].m.should.equal('boo.foo-topic.foo-subscription.flarg');
+      metrics[0].m.should.equal('boo.topics.foo-topic.foo-subscription.baz');
+      metrics[1].m.should.equal('boo.topics.foo-topic.foo-subscription.flarg');
     });
   });
 
@@ -102,17 +103,17 @@ describe('statsdLogger tests', () => {
         SubscriptionCount: 2
       });
       metrics.length.should.equal(3);
-      metrics[0].m.should.equal('foo-topic.sizeinbytes');
+      metrics[0].m.should.equal('topics.foo-topic.sizeinbytes');
       metrics[0].v.should.equal(13);
-      metrics[1].m.should.equal('foo-topic.subscriptioncount');
+      metrics[1].m.should.equal('topics.foo-topic.subscriptioncount');
       metrics[1].v.should.equal(2);
-      metrics[2].m.should.equal('foo-topic.percentused');
+      metrics[2].m.should.equal('topics.foo-topic.percentused');
       metrics[2].v.should.equal(0);
     });
 
     it('should log missing fields as zero', () => {
       statsdLogger.topic({
-        TopicName: 'foo-topic',
+        TopicName: 'foo-queue'
       });
       metrics.length.should.equal(3);
       metrics.forEach(function(f){
@@ -125,16 +126,16 @@ describe('statsdLogger tests', () => {
         TopicName: 'foo-topic',
         MaxSizeInMegabytes: 12,
         SizeInBytes: 13,
-        SubscriptionCount: 2,
+        CountDetails: {},
         tags: {
           'foo': 'bar',
           'flarg': 'baz'
         }
       });
       metrics.length.should.equal(3);
-      metrics[0].m.should.equal('foo-topic.sizeinbytes,foo=bar,flarg=baz');
-      metrics[1].m.should.equal('foo-topic.subscriptioncount,foo=bar,flarg=baz');
-      metrics[2].m.should.equal('foo-topic.percentused,foo=bar,flarg=baz');
+      metrics[0].m.should.equal('topics.foo-topic.sizeinbytes,foo=bar,flarg=baz');
+      metrics[1].m.should.equal('topics.foo-topic.subscriptioncount,foo=bar,flarg=baz');
+      metrics[2].m.should.equal('topics.foo-topic.percentused,foo=bar,flarg=baz');
     });
 
     it('should use instance prefix', () => {
@@ -146,9 +147,79 @@ describe('statsdLogger tests', () => {
         prefix: 'boo'
       });
       metrics.length.should.equal(3);
-      metrics[0].m.should.equal('boo.foo-topic.sizeinbytes');
-      metrics[1].m.should.equal('boo.foo-topic.subscriptioncount');
-      metrics[2].m.should.equal('boo.foo-topic.percentused');
+      metrics[0].m.should.equal('boo.topics.foo-topic.sizeinbytes');
+      metrics[1].m.should.equal('boo.topics.foo-topic.subscriptioncount');
+      metrics[2].m.should.equal('boo.topics.foo-topic.percentused');
+    });
+  });
+
+  describe('logging a queue', () => {
+    it('should log all the given fields', () => {
+      statsdLogger.queue({
+        QueueName: 'foo-queue',
+        MaxSizeInMegabytes: 12,
+        SizeInBytes: 13,
+        SubscriptionCount: 2,
+        CountDetails: {
+          'd2p1:baz': 1,
+          'd2p1:flarg': 2
+        }
+      });
+      metrics.length.should.equal(4);
+      metrics[0].m.should.equal('queues.foo-queue.sizeinbytes');
+      metrics[0].v.should.equal(13);
+      metrics[1].m.should.equal('queues.foo-queue.percentused');
+      metrics[1].v.should.equal(0);
+      metrics[2].m.should.equal('queues.foo-queue.baz');
+      metrics[2].v.should.equal(1);
+      metrics[3].m.should.equal('queues.foo-queue.flarg');
+      metrics[3].v.should.equal(2);
+    });
+
+    it('should log missing fields as zero', () => {
+      statsdLogger.queue({
+        QueueName: 'foo-queue',
+        CountDetails: {}
+      });
+      metrics.length.should.equal(4);
+      metrics.forEach(function(f){
+        f.v.should.equal(0);
+      });
+    });
+
+    it('should append given tags', () => {
+      statsdLogger.queue({
+        QueueName: 'foo-queue',
+        MaxSizeInMegabytes: 12,
+        SizeInBytes: 13,
+        SubscriptionCount: 2,
+        CountDetails: {},
+        tags: {
+          'foo': 'bar',
+          'flarg': 'baz'
+        }
+      });
+      metrics.length.should.equal(4);
+      metrics[0].m.should.equal('queues.foo-queue.sizeinbytes,foo=bar,flarg=baz');
+      metrics[1].m.should.equal('queues.foo-queue.percentused,foo=bar,flarg=baz');
+      metrics[2].m.should.equal('queues.foo-queue.baz,foo=bar,flarg=baz');
+      metrics[3].m.should.equal('queues.foo-queue.flarg,foo=bar,flarg=baz');
+    });
+
+    it('should use instance prefix', () => {
+      statsdLogger.queue({
+        QueueName: 'foo-queue',
+        MaxSizeInMegabytes: 12,
+        SizeInBytes: 13,
+        SubscriptionCount: 2,
+        CountDetails: {},
+        prefix: 'boo'
+      });
+      metrics.length.should.equal(4);
+      metrics[0].m.should.equal('boo.queues.foo-queue.sizeinbytes');
+      metrics[1].m.should.equal('boo.queues.foo-queue.percentused');
+      metrics[2].m.should.equal('boo.queues.foo-queue.baz');
+      metrics[3].m.should.equal('boo.queues.foo-queue.flarg');
     });
   });
 });
