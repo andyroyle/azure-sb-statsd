@@ -8,7 +8,7 @@
     "start": "node azure-sb.js"
   },
   "bin": {
-    "azure-sb-statsd": "./bin/azure-sb-statsd"
+    "azure-sb-statsd": "./bin/azure-sb-statsd.js"
   },
   "repository": {
     "type": "git",
