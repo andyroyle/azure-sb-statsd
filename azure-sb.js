@@ -22,6 +22,7 @@ var azuresbServers = require(path.join(configDir, 'azure-sb.json')).map((c) => {
   client.prefix = c.prefix;
   client.queues = c.queues;
   client.topics = c.topics;
+  client.ignoredsubscriptions = c.ignoredsubscriptions;
 
   if(!client.queues && !client.topics){
     util.log(`[${c.endpoint}]: WARN queues = false, topics = false, not doing anything`);

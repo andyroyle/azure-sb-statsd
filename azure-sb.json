@@ -5,6 +5,7 @@
     "keyname": "RootManageSharedAccessKey",
     "queues": false,
     "topics": true,
+    "ignoredsubscriptions" : [ "patterns" ],
     "tags": {
       "foo": "bar"
     },
