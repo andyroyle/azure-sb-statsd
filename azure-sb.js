@@ -15,6 +15,12 @@ var statsConfig = require(path.join(configDir, 'statsd'));
 util.log('starting...');
 util.log(`using config from ${configDir}`);
 
+var createRegex = (patterns) => {
+  return patterns.map((p) => {
+    return new RegExp(p);
+  });
+};
+
 var azuresbServers = require(path.join(configDir, 'azure-sb.json')).map((c) => {
   var client = azuresb.createServiceBusService(`Endpoint=${c.endpoint};SharedAccessKeyName=${c.keyname};SharedAccessKey=${c.key}`);
   client.endpoint = c.endpoint;
@@ -22,7 +28,7 @@ var azuresbServers = require(path.join(configDir, 'azure-sb.json')).map((c) => {
   client.prefix = c.prefix;
   client.queues = c.queues;
   client.topics = c.topics;
-  client.ignoredsubscriptions = c.ignoredsubscriptions || [];;
+  client.ignoredsubscriptions = createRegex(c.ignoredsubscriptions || [])
 
   if(!client.queues && !client.topics){
     util.log(`[${c.endpoint}]: WARN queues = false, topics = false, not doing anything`);

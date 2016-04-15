@@ -49,13 +49,13 @@ describe('subscriptions tests', () => {
       metrics[0].prefix.should.equal('boo');
     });
   });
-  
+
   it('should not send ignored subscriptions', () => {
     subscriptions([{
       TopicName: 'foo-topic'
     }], {
       listSubscriptions: listSubscriptions,
-      ignoredsubscriptions: [ 'foo' ],
+      ignoredsubscriptions: [ new RegExp('foo') ],
       tags: {}
     }, () => {
       metrics.length.should.equal(0);
