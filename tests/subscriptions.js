@@ -28,6 +28,7 @@ describe('subscriptions tests', () => {
       TopicName: 'foo-topic'
     }], {
       listSubscriptions: listSubscriptions,
+      ignoredsubscriptions: [],
       tags: {
         foo: 'bar'
       }
@@ -41,6 +42,7 @@ describe('subscriptions tests', () => {
       TopicName: 'foo-topic'
     }], {
       listSubscriptions: listSubscriptions,
+      ignoredsubscriptions: [],
       tags: {},
       prefix: 'boo'
     }, () => {
