@@ -56,8 +56,7 @@ describe('subscriptions tests', () => {
     }], {
       listSubscriptions: listSubscriptions,
       ignoredsubscriptions: [ 'foo' ],
-      tags: {},
-      prefix: 'boo'
+      tags: {}
     }, () => {
       metrics.length.should.equal(0);
     });
