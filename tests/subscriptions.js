@@ -28,6 +28,7 @@ describe('subscriptions tests', () => {
       TopicName: 'foo-topic'
     }], {
       listSubscriptions: listSubscriptions,
+      ignoredsubscriptions: [],
       tags: {
         foo: 'bar'
       }
@@ -41,10 +42,24 @@ describe('subscriptions tests', () => {
       TopicName: 'foo-topic'
     }], {
       listSubscriptions: listSubscriptions,
+      ignoredsubscriptions: [],
       tags: {},
       prefix: 'boo'
     }, () => {
       metrics[0].prefix.should.equal('boo');
+    });
+  });
+  
+  it('should not send ignored subscriptions', () => {
+    subscriptions([{
+      TopicName: 'foo-topic'
+    }], {
+      listSubscriptions: listSubscriptions,
+      ignoredsubscriptions: [ 'foo' ],
+      tags: {},
+      prefix: 'boo'
+    }, () => {
+      metrics.length.should.equal(0);
     });
   });
 });
