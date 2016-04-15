@@ -31,6 +31,8 @@ var azuresbServers = require(path.join(configDir, 'azure-sb.json')).map((c) => {
   return client;
 });
 
+azuresbServers.prototype.ignoredsubscriptions = []
+
 azuresbServers.forEach((c) => {
   setInterval(() => {
     if(c.queues){
