@@ -17,7 +17,7 @@ util.log(`using config from ${configDir}`);
 
 var createRegex = (patterns) => {
   return patterns.map((p) => {
-    return new RegExp(p);
+    return new RegExp(p, 'i');
   });
 };
 
