@@ -45,6 +45,7 @@ Subscription
     "keyname": "RootManageSharedAccessKey", // chances are you'll need to use the rootmanage key
     "queues": true,                         // log info for queues
     "topics": true,                         // log info for topics (and subscriptions)
+    "ignoredsubscriptions": ["foo"]         // optional array of regex patterns for ignored subscriptions
     "prefix": "foo.bar.azuresb.yay",        // optional prefix for metrics from this instance
     "tags": {                               // optional, tags are supported by the influxdb backend
       "foo": "bar"
