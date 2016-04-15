@@ -49,4 +49,17 @@ describe('subscriptions tests', () => {
       metrics[0].prefix.should.equal('boo');
     });
   });
+  
+  it('should not send ignored subscriptions', () => {
+    subscriptions([{
+      TopicName: 'foo-topic'
+    }], {
+      listSubscriptions: listSubscriptions,
+      ignoredsubscriptions: [ 'foo' ],
+      tags: {},
+      prefix: 'boo'
+    }, () => {
+      metrics.length.should.equal(0);
+    });
+  });
 });
