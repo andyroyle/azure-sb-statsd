@@ -1,6 +1,6 @@
 {
   "name": "azure-sb-statsd",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "pull info from azure service bus and publish to statsd",
   "main": "azure-sb.js",
   "scripts": {
