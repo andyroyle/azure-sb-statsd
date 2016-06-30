@@ -1,6 +1,6 @@
 'use strict';
 
-var async = require('async');
+var Async = require('async');
 var azuresb = require('azure-sb');
 var path = require('path');
 var util = require('util');
@@ -37,32 +37,52 @@ var azuresbServers = require(path.join(configDir, 'azure-sb.json')).map((c) => {
   return client;
 });
 
+var execute = (c, finished) => {
+  if(!c.queues && !c.topics){
+    return finished();
+  }
+
+  if(c.queues){
+    queues(c, (err, qs) => {
+      if(err){
+        return finished(err);
+      }
+    });
+  }
+
+  if(c.topics){
+    topics(c, (err, ts) => {
+      if(err){
+        return finished(err);
+      }
+
+      Async.forEach(ts, (topic, done) => {
+        subscriptions(topic, c, done);
+      }, (err) => {
+        return finished(err);
+      });
+    });
+  }
+};
+
+var interval = (statsConfig.interval || 10) * 1000;
+
 azuresbServers.forEach((c) => {
+  var running = false;
   setInterval(() => {
-    if(c.queues){
-      queues(c, (err, qs) => {
-        if(err){
-          util.log(`[${c.endpoint}]: ${err.toString()}`);
-          return;
-        }
-      });
+
+    if(running){
+      util.log(`[${c.endpoint}] previous operation still in process`);
+      return;
     }
 
-    if(c.topics){
-      topics(c, (err, ts) => {
-        if(err){
-          util.log(`[${c.endpoint}]: ${err.toString()}`);
-          return;
-        }
+    running = true;
+    execute(c, (err) => {
+      if(err){
+        util.log(`[${c.endpoint}]: ${err.toString()}`);
+      }
+      running = false;
+    });
 
-        async.forEach(ts, (topic, done) => {
-          subscriptions(topic, c, done);
-        }, (err) => {
-          if(err){
-            util.log(`[${c.endpoint}]: ${err.toString()}`);
-          }
-        });
-      });
-    }
-  }, (statsConfig.interval || 10) * 1000);
+  }, interval);
 });
